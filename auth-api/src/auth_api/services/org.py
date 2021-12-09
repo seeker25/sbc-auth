@@ -216,6 +216,7 @@ class Org:  # pylint: disable=too-many-public-methods
             pay_request['padTosAcceptedBy'] = kwargs['user_context'].user_name
         # invoke pay-api
         token = RestService.get_service_account_token()
+        current_app.logger.info(f'pay_request {is_new_org} {pay_request}')
         if is_new_org:
             response = RestService.post(endpoint=f'{pay_url}/accounts',
                                         data=pay_request, token=token, raise_for_status=True)
