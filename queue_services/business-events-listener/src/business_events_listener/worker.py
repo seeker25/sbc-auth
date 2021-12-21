@@ -99,6 +99,9 @@ async def process_name_events(event_message: Dict[str, any]):
     request_data = event_message.get('data').get('request') or event_message.get('data').get('name')
     nr_number = request_data['nrNum']
     nr_status = request_data['newState']
+    if nr_status != 'DRAFT':
+        return
+
     nr_entity = EntityModel.find_by_business_identifier(nr_number)
     if nr_entity is None:
         logger.info('Entity doesn''t exist, creating a new entity.')
