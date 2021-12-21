@@ -103,6 +103,9 @@ class _Config:  # pylint: disable=too-few-public-methods
     KEYCLOAK_SERVICE_ACCOUNT_ID = os.getenv('SBC_AUTH_ADMIN_CLIENT_ID')
     KEYCLOAK_SERVICE_ACCOUNT_SECRET = os.getenv('SBC_AUTH_ADMIN_CLIENT_SECRET')
 
+    # Delay between processing
+    DELAY_PROCESS = int(os.getenv('DELAY_PROCESS', '0'))
+
 
 class DevConfig(_Config):  # pylint: disable=too-few-public-methods
     """Creates the Development Config object."""

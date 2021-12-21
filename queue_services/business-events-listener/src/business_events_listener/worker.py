@@ -27,6 +27,7 @@ to be pursued.
 """
 import json
 import os
+import time
 from typing import Dict
 
 import nats
@@ -134,6 +135,8 @@ async def process_name_events(event_message: Dict[str, any]):
                 affiliation.flush()
 
     nr_entity.save()
+    # Add a delay if configured
+    time.sleep(APP_CONFIG.DELAY_PROCESS)
     logger.debug('<<<<<<<process_name_events<<<<<<<<<<')
 
 
