@@ -103,6 +103,10 @@ async def process_name_events(event_message: Dict[str, any]):
         return
 
     nr_entity = EntityModel.find_by_business_identifier(nr_number)
+
+    if nr_entity is not None:
+        return
+
     if nr_entity is None:
         logger.info('Entity doesn''t exist, creating a new entity.')
         nr_entity = EntityModel(
