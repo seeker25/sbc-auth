@@ -64,6 +64,7 @@
         "examples": [
           "V1A 1A1"
         ],
+        "maxLength": 10,
         "pattern": "^(.*)$"
       },
       "deliveryInstructions": {

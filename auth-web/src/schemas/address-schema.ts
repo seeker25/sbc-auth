@@ -21,7 +21,7 @@ export const addressSchema = {
   },
   postalCode: {
     required,
-    maxLength: maxLength(15)
+    maxLength: maxLength(10)
   },
   deliveryInstructions: {
     maxLength: maxLength(80)
