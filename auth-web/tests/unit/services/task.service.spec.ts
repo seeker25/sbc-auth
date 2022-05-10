@@ -40,7 +40,7 @@ jest.mock('axios', () => {
 })
 
 describe('Task service', () => {
-  beforeEach(() => {
+  beforeAll(() => {
     sessionStorage.__STORE__['AUTH_API_CONFIG'] = JSON.stringify(mockob)
     // @ts-ignore
     jest.clearAllMocks()
