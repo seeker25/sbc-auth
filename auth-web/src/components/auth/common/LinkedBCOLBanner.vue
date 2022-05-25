@@ -49,7 +49,7 @@
       </div>
     </div>
   </v-alert>
-  <BcolLogin v-if="editMode" :hideLinkBtn="true" @emit-bcol-info="emitBcolInfo" ></BcolLogin>
+  <BcolLogin v-if="editMode" :hideLinkBtn="true" :defaultUserId="bcolAccountDetails.userId" @emit-bcol-info="emitBcolInfo" ></BcolLogin>
   </div>
 </template>
 
@@ -66,12 +66,14 @@ import BcolLogin from '@/components/auth/create-account/BcolLogin.vue'
 export default class LinkedBCOLBanner extends Vue {
   @Prop({ default: false }) showUnlinkAccountBtn: boolean
   @Prop({ default: false }) showEditBtn: boolean
+  @Prop({ default: false }) forceEditMode: boolean
   @Prop({ default: '' }) bcolAccountName: string
   @Prop({ default: () => ({} as BcolAccountDetails) }) bcolAccountDetails: BcolAccountDetails
   private editMode: boolean = false // user can edit the bcol details
 
   private async mounted () {
-    this.editMode = false
+    this.editMode = this.forceEditMode || false
+    this.emitBcolInfo({})
   }
   @Emit()
   private unlinkAccount () {
