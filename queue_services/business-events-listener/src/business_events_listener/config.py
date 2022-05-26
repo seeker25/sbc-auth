@@ -90,11 +90,11 @@ class _Config:  # pylint: disable=too-few-public-methods
         'durable_name': os.getenv('NATS_NR_EVENTS_QUEUE', 'nr-account-events-worker') + '_durable',
     }
 
-    # ENTITY_SUBSCRIPTION_OPTIONS = {
-    #     'subject': os.getenv('NATS_ENTITY_EVENTS_SUBJECT', 'entity.events'),
-    #     'queue': os.getenv('NATS_ENTITY_EVENTS_QUEUE', 'events-worker'),
-    #     'durable_name': os.getenv('NATS_ENTITY_EVENTS_QUEUE', 'entity-account-events-worker') + '_durable',
-    # }
+    ENTITY_SUBSCRIPTION_OPTIONS = {
+        'subject': os.getenv('NATS_ENTITY_EVENTS_SUBJECT', 'entity.events'),
+        'queue': os.getenv('NATS_ENTITY_EVENTS_QUEUE', 'filing-worker'),
+        'durable_name': os.getenv('NATS_ENTITY_EVENTS_QUEUE', 'filing-worker') + '_durable',
+    }
 
     PAY_API_URL = os.getenv('PAY_API_URL') + os.getenv('PAY_API_VERSION')
 

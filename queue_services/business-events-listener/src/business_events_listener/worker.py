@@ -185,7 +185,8 @@ async def process_name_events(event_message: Dict[str, any]):
     logger.debug('<<<<<<<process_name_events<<<<<<<<<<')
 
 
-qsm = QueueServiceManager()  # pylint: disable=invalid-name
+qsm_nr = QueueServiceManager()  # pylint: disable=invalid-name
+qsm_entity = QueueServiceManager()  # pylint: disable=invalid-name
 APP_CONFIG = config.get_named_config(os.getenv('DEPLOYMENT_ENV', 'production'))
 FLASK_APP = Flask(__name__)
 FLASK_APP.config.from_object(APP_CONFIG)
