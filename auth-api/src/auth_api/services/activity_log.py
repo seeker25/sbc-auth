@@ -79,9 +79,9 @@ class ActivityLog:  # pylint: disable=too-many-instance-attributes
             activity_log: ActivityLogModel = result[0]
             log_dict = ActivityLogSchema(exclude=('actor_id',)).dump(activity_log)
 
-            if user := result[1]:
-                actor = ActivityLog._mask_user_name(is_staff_access, user)
-                log_dict['actor'] = actor
+            user = result[1]
+            actor = ActivityLog._mask_user_name(is_staff_access, user)
+            log_dict['actor'] = actor
             log_dict['action'] = ActivityLog._build_string(activity_log)
             logs['activity_logs'].append(log_dict)
 
@@ -190,10 +190,12 @@ class ActivityLog:  # pylint: disable=too-many-instance-attributes
 
     @ staticmethod
     def _mask_user_name(is_staff_access, user):
+        if user is None:
+            return 'Service Account'
         is_actor_a_staff = user.type == Role.STAFF.name
         if not is_staff_access and is_actor_a_staff:
             # if staff ,change it to BC Regisitry Staff
             actor = 'BC Registry Staff'
         else:
-            actor = user.username if is_actor_a_staff else f'{user.firstname} {user.lastname}'
+            actor = f'{user.firstname} {user.lastname}'
         return actor

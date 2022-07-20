@@ -107,6 +107,7 @@ class NRStatus(Enum):
 
     APPROVED = 'APPROVED'
     CONDITIONAL = 'CONDITIONAL'
+    CONSUMED = 'CONSUMED'
 
 
 class NRNameStatus(Enum):

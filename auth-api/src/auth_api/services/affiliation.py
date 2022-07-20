@@ -186,8 +186,10 @@ class Affiliation:
 
         if entity_type not in ['SP', 'GP']:
             entity.set_pass_code_claimed(True)
-        ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.CREATE_AFFILIATION.value,
-                                              name=entity.name, id=entity.business_identifier))
+        if entity_type not in [CorpType.RTMP.value, CorpType.TMP.value]:
+            name = entity.name if len(entity.name) > 0 else entity.business_identifier
+            ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.CREATE_AFFILIATION.value,
+                                                           name=name, id=entity.business_identifier))
         return Affiliation(affiliation)
 
     @staticmethod
@@ -246,8 +248,9 @@ class Affiliation:
             # Create an affiliation with org
             affiliation_model = AffiliationModel(org_id=org_id, entity_id=entity.identifier)
             affiliation_model.save()
-            ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.CREATE_AFFILIATION.value,
-                                                           name=entity.name, id=entity.business_identifier))
+            if entity.corp_type not in [CorpType.RTMP.value, CorpType.TMP.value]:
+                ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.CREATE_AFFILIATION.value,
+                                                               name=entity.name, id=entity.business_identifier))
             entity.set_pass_code_claimed(True)
         else:
             raise BusinessException(Error.NR_NOT_FOUND, None)
@@ -280,6 +283,24 @@ class Affiliation:
         entity.set_pass_code_claimed(False)
         ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.REMOVE_AFFILIATION.value,
                                                        name=entity.name, id=entity.business_identifier))
+
+        if entity.corp_type in [CorpType.RTMP.value, CorpType.TMP.value]:
+            return
+
+        # When registering a business (also RTMP and TMP in between):
+        # 1. affiliate a NR
+        # 2. unaffiliate a NR draft
+        # 3. affiliate a business (with NR in identifier)
+        # 4. unaffilliate a business (with NR in identifier)
+        # 5. affilliate a business (with FM or BC in identifier)
+        # Users can also intentionally delete a draft. We want to log this action.
+        name_request = (entity.status in [NRStatus.DRAFT.value, NRStatus.CONSUMED.value] and
+                        entity.corp_type == CorpType.NR.value) or 'NR ' in entity.business_identifier
+        publish = log_delete_draft or not name_request
+        if publish:
+            name = entity.name if len(entity.name) > 0 else entity.business_identifier
+            ActivityLogPublisher.publish_activity(Activity(org_id, ActivityAction.REMOVE_AFFILIATION.value,
+                                                           name=name, id=entity.business_identifier))
 
     @staticmethod
     def _get_nr_details(nr_number: str, token: str):
