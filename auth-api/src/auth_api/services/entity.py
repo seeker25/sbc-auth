@@ -280,4 +280,5 @@ class Entity:
                 if contact:
                     db.session.delete(contact)
 
+        # this commits the changes to the database
         self._model.delete()
