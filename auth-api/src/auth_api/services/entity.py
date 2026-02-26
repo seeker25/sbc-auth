@@ -24,6 +24,7 @@ from auth_api.exceptions.errors import Error
 from auth_api.models import AffiliationInvitation as AffiliationInvitationModel
 from auth_api.models import Contact as ContactModel
 from auth_api.models import ContactLink as ContactLinkModel
+from auth_api.models.db import db
 from auth_api.models.entity import Entity as EntityModel
 from auth_api.schemas import EntitySchema
 from auth_api.utils.account_mailer import publish_to_mailer
@@ -268,9 +269,16 @@ class Entity:
             raise BusinessException(Error.ENTITY_DELETE_FAILED, None)
 
         for invitation in AffiliationInvitationModel.find_invitations_by_entity(self._model.id):
-            invitation.delete()
+            db.session.delete(invitation)
 
-        if self._model.contacts:
-            self.delete_contact()
+        contact_link = ContactLinkModel.find_by_entity_id(self._model.id)
+        if contact_link:
+            contact = contact_link.contact
+            contact_link.entity_id = None
+            if not contact_link.has_links():
+                db.session.delete(contact_link)
+                if contact:
+                    db.session.delete(contact)
 
+        # this commits the changes to the database
         self._model.delete()
