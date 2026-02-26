@@ -30,3 +30,10 @@ class AffiliationSchema(BaseSchema):  # pylint: disable=too-many-ancestors, too-
 
     entity = fields.Nested("EntitySchema", many=False, data_key="business")
     org = fields.Nested("OrgSchema", many=False, data_key="organization")
+
+
+class AffiliationWithOrgSchema(AffiliationSchema):
+    """AffiliationSchema that includes org id and uuid."""
+
+    org_id = fields.Function(lambda obj: obj.org.id, data_key="orgId")
+    org_uuid = fields.Function(lambda obj: str(obj.org.uuid), data_key="orgUuid")
