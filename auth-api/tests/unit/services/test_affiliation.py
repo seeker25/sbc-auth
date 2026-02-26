@@ -61,13 +61,13 @@ def test_create_affiliation(session, auth_mock, monkeypatch):  # pylint:disable=
     result = affiliation.as_dict()
     assert result["organization"]["id"] == org_dictionary["id"]
 
-    # orgId/orgUuid should only appear in nested business.affiliations
-    assert "orgId" not in result
-    assert "orgUuid" not in result
+    # nested business.affiliations should include organization details
     nested = result["business"]["affiliations"]
     assert len(nested) > 0
-    assert nested[0]["orgId"] == org_id
-    assert nested[0]["orgUuid"] == str(org_dictionary["uuid"])
+    nested_org = nested[0]["organization"]
+    assert nested_org["id"] == org_id
+    assert nested_org["uuid"] == str(org_dictionary["uuid"])
+    assert nested_org["name"] == org_dictionary["name"]
 
 
 def test_create_affiliation_no_org(session, auth_mock):  # pylint:disable=unused-argument
@@ -591,8 +591,8 @@ def test_find_affiliations_for_new_business(session, auth_mock, nr_mock, monkeyp
     assert affiliated_entities[0]["nr_number"] == business_identifier1
     assert affiliated_entities[0]["name"] == name1
     for aff in affiliated_entities[0]["affiliations"]:
-        assert aff["orgId"] == org_id
-        assert aff["orgUuid"] == str(org_dictionary["uuid"])
+        assert aff["organization"]["id"] == org_id
+        assert aff["organization"]["uuid"] == str(org_dictionary["uuid"])
 
     delete_affiliation_request = DeleteAffiliationRequest(org_id=org_id, business_identifier=business_identifier2)
     AffiliationService.delete_affiliation(delete_affiliation_request)
@@ -710,9 +710,9 @@ def test_find_affiliation(session, auth_mock):  # pylint:disable=unused-argument
     assert affiliation["business"]["business_identifier"] == business_identifier
     assert affiliation["organization"]["id"] == org_dictionary["id"]
 
-    # orgId/orgUuid should only appear in nested business.affiliations, not at top level
-    assert "orgId" not in affiliation
-    assert "orgUuid" not in affiliation
+    # nested business.affiliations should include organization details
     for nested in affiliation["business"]["affiliations"]:
-        assert nested["orgId"] == org_id
-        assert nested["orgUuid"] == str(org_dictionary["uuid"])
+        nested_org = nested["organization"]
+        assert nested_org["id"] == org_id
+        assert nested_org["uuid"] == str(org_dictionary["uuid"])
+        assert nested_org["name"] == org_dictionary["name"]

@@ -34,5 +34,5 @@ class EntitySchema(BaseSchema):  # pylint: disable=too-many-ancestors, too-few-p
     corp_type = fields.Nested(CorpTypeSchema, many=False)
     corp_sub_type = fields.Nested(CorpTypeSchema, many=False)
     affiliations = fields.Nested(
-        "AffiliationWithOrgSchema", many=True, only=("id", "created", "certified_by_name", "org_id", "org_uuid")
+        "AffiliationWithOrgSchema", many=True, only=("id", "created", "certified_by_name", "organization")
     )
