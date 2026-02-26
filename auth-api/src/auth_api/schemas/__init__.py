@@ -16,7 +16,7 @@
 from .activity_log import ActivityLogSchema
 from .affidavit import AffidavitSchema
 from .affidavit_status import AffidavitStatusSchema
-from .affiliation import AffiliationSchema
+from .affiliation import AffiliationSchema, AffiliationWithOrgSchema
 from .affiliation_invitation import AffiliationInvitationSchema
 from .contact import ContactSchema, ContactSchemaPublic
 from .contact_link import ContactLinkSchema
