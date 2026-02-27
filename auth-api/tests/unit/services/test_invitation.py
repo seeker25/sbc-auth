@@ -246,9 +246,10 @@ def test_accept_invitation_for_govm(session, auth_mock, keycloak_mock, monkeypat
     with patch.object(InvitationService, "send_invitation", return_value=None):
         with patch.object(auth, "check_auth", return_value=True):
             with patch.object(InvitationService, "notify_admin", return_value=None):
-                user_with_token = dict(TestUserInfo.user_staff_admin)
-                user_with_token["keycloak_guid"] = TestJwtClaims.public_user_role["sub"]
-                user = factory_user_model(user_with_token)
+                staff_creator_with_token = dict(TestUserInfo.user_staff_admin)
+                staff_creator_with_token["keycloak_guid"] = TestJwtClaims.staff_admin_role["sub"]
+                staff_creator_with_token["idp_userid"] = TestJwtClaims.staff_admin_role["idp_userid"]
+                user = factory_user_model(staff_creator_with_token)
 
                 patch_token_info(TestJwtClaims.staff_admin_role, monkeypatch)
 

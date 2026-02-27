@@ -196,6 +196,7 @@ class Membership:  # pylint: disable=too-many-instance-attributes,too-few-public
                 "orgName": org_name,
                 "role": self._model.membership_type.code,
                 "label": self._model.membership_type.label,
+                "loginSource": self._model.user.login_source,
             }
         elif notification_type == NotificationType.MEMBERSHIP_APPROVED.value:
             # TODO how to check properly if user is bceid user

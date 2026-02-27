@@ -89,8 +89,7 @@ def put_task(task_id):
         task = TaskService(TaskModel.find_by_task_id(task_id))
         if task:
             # Update task and its relationships
-            origin = request.environ.get("HTTP_ORIGIN", "localhost")
-            task_dict = task.update_task(task_info=request_json, origin_url=origin).as_dict()
+            task_dict = task.update_task(task_info=request_json).as_dict()
             # ProductService uses TaskService already. So, we need to avoid circular import.
             if task_dict["relationship_type"] == TaskRelationshipType.PRODUCT.value:
                 ProductService.update_org_product_keycloak_groups(task_dict["account_id"])

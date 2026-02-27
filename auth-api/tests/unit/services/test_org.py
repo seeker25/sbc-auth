@@ -284,7 +284,10 @@ def test_create_basic_org_assert_pay_request_is_govm(session, keycloak_mock, sta
     """Assert that while org creation , pay-api gets called with proper data for basic accounts."""
     user = factory_user_model()
     token_info = TestJwtClaims.get_test_user(
-        sub=user.keycloak_guid, source=LoginSource.STAFF.value, roles=["create_accounts"]
+        sub=user.keycloak_guid,
+        source=LoginSource.STAFF.value,
+        roles=["create_accounts"],
+        idp_userid=user.idp_userid,
     )
     with patch.object(RestService, "post") as mock_post:
         patch_token_info(token_info, monkeypatch)

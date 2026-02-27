@@ -26,7 +26,9 @@ from unittest.mock import patch
 import pytest
 import pytz
 from faker import Faker
+from sbc_common_components.utils.enums import QueueMessageTypes
 
+import auth_api.utils.account_mailer
 from auth_api.exceptions import BusinessException
 from auth_api.exceptions.errors import Error
 from auth_api.models import Affidavit as AffidavitModel
@@ -81,6 +83,7 @@ from tests.utilities.factory_utils import (
     patch_pay_account_delete_error,
     patch_pay_account_fees,
     patch_pay_account_post,
+    patch_pay_account_put,
 )
 
 FAKE = Faker()
@@ -852,6 +855,35 @@ def test_add_org_invalid_returns_exception(client, jwt, session):  # pylint:disa
         )
         assert rv.status_code == 400
         assert schema_utils.validate(rv.json, "exception")[0]
+
+
+@pytest.mark.parametrize(
+    "route,org_data_factory",
+    [
+        ("/api/v1/orgs", lambda: TestOrgInfo.org_govm),  # GOVM: is_staff_review_needed=False
+        ("/api/v2/orgs", lambda: {**TestOrgInfo.org_govm, "contact": TestContactInfo.contact1}),
+    ],
+)
+@patch.object(UserService, "get_admin_emails_for_org", return_value="test@test.com")
+@patch.object(auth_api.services.org, "publish_to_mailer")
+def test_add_org_sends_account_created_notification(
+    mock_mailer, _mock_admin_emails, client, jwt, session, keycloak_mock, monkeypatch, route, org_data_factory
+):  # pylint:disable=unused-argument
+    """Assert that POST org (V1 and V2) sends account created notification."""
+    patch_pay_account_post(monkeypatch)
+    patch_pay_account_put(monkeypatch)
+    headers = factory_auth_header(jwt=jwt, claims=TestJwtClaims.staff_admin_role)
+    client.post("/api/v1/users", headers=headers, content_type="application/json")
+
+    org_data = org_data_factory()
+    rv = client.post(route, data=json.dumps(org_data), headers=headers, content_type="application/json")
+    assert rv.status_code == HTTPStatus.CREATED
+    mock_mailer.assert_called_once()
+    call_args = mock_mailer.call_args
+    assert call_args[0][0] == QueueMessageTypes.ACCOUNT_CREATED_NOTIFICATION.value
+    assert call_args[1]["data"]["emailAddresses"]
+    assert call_args[1]["data"]["accountId"] == rv.json["id"]
+    assert "orgName" in call_args[1]["data"]
 
 
 def test_get_org(client, jwt, session, keycloak_mock):  # pylint:disable=unused-argument

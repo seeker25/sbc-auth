@@ -90,7 +90,7 @@ class Task:  # pylint: disable=too-many-instance-attributes
         if do_commit:
             db.session.commit()
 
-    def update_task(self, task_info: dict = None, origin_url: str = None):
+    def update_task(self, task_info: dict = None):
         """Update a task record."""
         current_app.logger.debug("<update_task ")
         task_model: TaskModel = self._model
@@ -104,12 +104,12 @@ class Task:  # pylint: disable=too-many-instance-attributes
         task_model.relationship_status = task_relationship_status
         task_model.flush()
 
-        self._update_relationship(origin_url=origin_url)
+        self._update_relationship()
         db.session.commit()
         current_app.logger.debug(">update_task ")
         return Task(task_model)
 
-    def _update_relationship(self, origin_url: str = None):
+    def _update_relationship(self):
         """Retrieve the relationship record and update the status."""
         task_model: TaskModel = self._model
         current_app.logger.debug("<update_task_relationship ")
@@ -121,7 +121,7 @@ class Task:  # pylint: disable=too-many-instance-attributes
             org_id = task_model.relationship_id
             if not is_hold:
                 self._update_org(
-                    is_approved=is_approved, org_id=org_id, origin_url=origin_url, task_action=task_model.action
+                    is_approved=is_approved, org_id=org_id, task_action=task_model.action
                 )
             else:
                 # Task with ACCOUNT_REVIEW action cannot be put on hold
@@ -211,7 +211,7 @@ class Task:  # pylint: disable=too-many-instance-attributes
             "applicationDate": f"{task_model.created.strftime('%m/%d/%Y')}",
             "accountId": account_id,
             "emailAddresses": admin_emails,
-            "contextUrl": f"{current_app.config.get('WEB_APP_URL')}"
+            "contextUrl": f"{current_app.config.get("WEB_APP_URL")}"
             f"/{current_app.config.get('BCEID_SIGNIN_ROUTE')}/"
             f"{create_account_signin_route}",
         }
@@ -223,14 +223,14 @@ class Task:  # pylint: disable=too-many-instance-attributes
             raise BusinessException(Error.FAILED_NOTIFICATION, None) from e
 
     @staticmethod
-    def _update_org(is_approved: bool, org_id: int, origin_url: str = None, task_action: str = None):
+    def _update_org(is_approved: bool, org_id: int, task_action: str = None):
         """Approve/Reject Affidavit and Org."""
         from auth_api.services import Org as OrgService  # pylint:disable=cyclic-import, import-outside-toplevel
 
         current_app.logger.debug("<update_task_org ")
 
         OrgService.approve_or_reject(
-            org_id=org_id, is_approved=is_approved, origin_url=origin_url, task_action=task_action
+            org_id=org_id, is_approved=is_approved, task_action=task_action
         )
 
         current_app.logger.debug(">update_task_org ")

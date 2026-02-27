@@ -274,8 +274,11 @@ def test_change_authentication_non_govm(session, auth_mock, keycloak_mock, monke
 @mock.patch("auth_api.services.affiliation_invitation.RestService.get_service_account_token", mock_token)
 def test_invitation_govm(session, auth_mock, keycloak_mock, monkeypatch):
     """Assert that government ministry organization invites can be accepted by IDIR only."""
-    # Users setup
-    staff_user = factory_user_model(TestUserInfo.user_staff_admin)
+    # Users setup - staff_user must align with token (sub and idp_userid) for find_by_jwt_token
+    staff_creator_with_token = dict(TestUserInfo.user_staff_admin)
+    staff_creator_with_token["keycloak_guid"] = TestJwtClaims.staff_admin_role["sub"]
+    staff_creator_with_token["idp_userid"] = TestJwtClaims.staff_admin_role["idp_userid"]
+    staff_user = factory_user_model(staff_creator_with_token)
     staff_invitee_user = factory_user_model(TestUserInfo.user1)
     invitee_bcsc_user = factory_user_model(TestUserInfo.user2)
     invitee_bceid_user = factory_user_model(TestUserInfo.user3)
