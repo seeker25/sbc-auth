@@ -1,3 +1,4 @@
+{
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>bcgov/renovate-config"
@@ -10,9 +11,9 @@
       "postUpdateOptions": ["poetryLockUpdate"]
     },
     {
-      "matchFileNames": ["auth-api/**"],
+      "matchFileNames": ["auth-api/**", "queue_services/account-mailer/**", "queue_services/auth-queue/**"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "auth-api non-major updates",
+      "groupName": "auth-api and dependents non-major updates",
       "additionalBranchPrefix": "auth-api-"
     },
     {
@@ -22,16 +23,16 @@
       "additionalBranchPrefix": "auth-web-"
     },
     {
-      "matchFileNames": ["queue_services/**"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "queue-services non-major updates",
-      "additionalBranchPrefix": "queue-services-"
-    },
-    {
       "matchFileNames": ["jobs/**"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "jobs non-major updates",
       "additionalBranchPrefix": "jobs-"
+    },
+    {
+      "matchFileNames": ["status-api/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "status-api non-major updates",
+      "additionalBranchPrefix": "status-api-"
     },
     {
       "matchUpdateTypes": ["major"],
