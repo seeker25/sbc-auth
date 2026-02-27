@@ -27,6 +27,7 @@ from sbc_common_components.utils.enums import QueueMessageTypes
 import auth_api.services.affiliation_invitation
 import auth_api.services.authorization as auth
 import auth_api.utils.account_mailer
+from auth_api.config import get_named_config
 from auth_api.exceptions import BusinessException
 from auth_api.exceptions.errors import Error
 from auth_api.models import AffiliationInvitation as AffiliationInvitationModel
@@ -47,6 +48,7 @@ from auth_api.utils.enums import (
     QueueMessageType,
 )
 from tests.utilities.factory_scenarios import TestContactInfo, TestEntityInfo, TestJwtClaims, TestOrgInfo, TestUserInfo
+from tests.unit.models.test_affiliation_invitation import factory_affiliation_invitation_model
 from tests.utilities.factory_utils import (
     factory_affiliation_invitation,
     factory_entity_model,
@@ -587,6 +589,27 @@ def test_validate_token_exception(
             AffiliationInvitationService.validate_token(None, new_invitation["id"])
 
         assert exception.value.code == Error.EXPIRED_AFFILIATION_INVITATION.name
+
+
+@pytest.mark.parametrize("expired", [True, False])
+def test_validate_token_expiry(session, auth_mock, expired):  # pylint:disable=unused-argument
+    """Validate that an affiliation invitation token is rejected after expiry and accepted before."""
+    invitation = factory_affiliation_invitation_model(session=session, status=InvitationStatus.PENDING.value)
+    token = AffiliationInvitationService.generate_confirmation_token(
+        invitation.id, invitation.from_org_id, invitation.to_org_id, "CP1234567"
+    )
+
+    expiry_mins = int(get_named_config().AFFILIATION_TOKEN_EXPIRY_PERIOD_MINS)
+
+    if expired:
+        with freeze_time(datetime.utcnow() + timedelta(minutes=expiry_mins + 1)):
+            with pytest.raises(BusinessException) as exception:
+                AffiliationInvitationService.validate_token(token, invitation.id)
+            assert exception.value.code == Error.EXPIRED_AFFILIATION_INVITATION.name
+    else:
+        result = AffiliationInvitationService.validate_token(token, invitation.id)
+        assert result is not None
+        assert result.as_dict()["id"] == invitation.id
 
 
 def test_accept_affiliation_invitation(
