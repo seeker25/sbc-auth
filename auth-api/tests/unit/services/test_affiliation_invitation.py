@@ -16,7 +16,7 @@
 Test suite to ensure that the Affiliation Invitation service routines are working as expected.
 """
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from unittest import mock
 from unittest.mock import patch
 
@@ -602,7 +602,7 @@ def test_validate_token_expiry(session, auth_mock, expired):  # pylint:disable=u
     expiry_mins = int(get_named_config().AFFILIATION_TOKEN_EXPIRY_PERIOD_MINS)
 
     if expired:
-        with freeze_time(datetime.utcnow() + timedelta(minutes=expiry_mins + 1)):
+        with freeze_time(datetime.now(tz=UTC) + timedelta(minutes=expiry_mins + 1)):
             with pytest.raises(BusinessException) as exception:
                 AffiliationInvitationService.validate_token(token, invitation.id)
             assert exception.value.code == Error.EXPIRED_AFFILIATION_INVITATION.name
