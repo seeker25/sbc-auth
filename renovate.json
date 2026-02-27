@@ -1,4 +1,3 @@
-{
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>bcgov/renovate-config"
@@ -8,12 +7,31 @@
   "packageRules": [
     {
       "matchManagers": ["poetry", "dockerfile"],
-      "groupName": "python and docker updates",
       "postUpdateOptions": ["poetryLockUpdate"]
     },
     {
+      "matchFileNames": ["auth-api/**"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "non-major updates"
+      "groupName": "auth-api non-major updates",
+      "additionalBranchPrefix": "auth-api-"
+    },
+    {
+      "matchFileNames": ["auth-web/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "auth-web non-major updates",
+      "additionalBranchPrefix": "auth-web-"
+    },
+    {
+      "matchFileNames": ["queue_services/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "queue-services non-major updates",
+      "additionalBranchPrefix": "queue-services-"
+    },
+    {
+      "matchFileNames": ["jobs/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "jobs non-major updates",
+      "additionalBranchPrefix": "jobs-"
     },
     {
       "matchUpdateTypes": ["major"],
@@ -22,7 +40,7 @@
     {
       "matchDepTypes": ["devDependencies"],
       "groupName": "dev dependencies"
-    },
+    }
   ],
   "vulnerabilityAlerts": {
     "enabled": true,
