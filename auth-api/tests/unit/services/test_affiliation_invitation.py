@@ -47,8 +47,8 @@ from auth_api.utils.enums import (
     LoginSource,
     QueueMessageType,
 )
-from tests.utilities.factory_scenarios import TestContactInfo, TestEntityInfo, TestJwtClaims, TestOrgInfo, TestUserInfo
 from tests.unit.models.test_affiliation_invitation import factory_affiliation_invitation_model
+from tests.utilities.factory_scenarios import TestContactInfo, TestEntityInfo, TestJwtClaims, TestOrgInfo, TestUserInfo
 from tests.utilities.factory_utils import (
     factory_affiliation_invitation,
     factory_entity_model,
