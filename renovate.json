@@ -5,6 +5,7 @@
   ],
   "automerge": false,
   "labels": ["dependencies"],
+  "postUpdateOptions": ["poetryLockUpdate"],
   "packageRules": [
     {
       "matchManagers": ["poetry", "dockerfile"],
