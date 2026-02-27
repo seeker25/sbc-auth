@@ -11,10 +11,19 @@
       "postUpdateOptions": ["poetryLockUpdate"]
     },
     {
-      "matchFileNames": ["auth-api/**", "queue_services/account-mailer/**", "queue_services/auth-queue/**"],
+      "matchFileNames": ["auth-api/**"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "auth-api and dependents non-major updates",
-      "additionalBranchPrefix": "auth-api-"
+      "groupName": "auth-api updates",
+      "additionalBranchPrefix": "auth-api-",
+      "prPriority": 10
+    },
+    {
+      "matchFileNames": ["queue_services/account-mailer/**", "queue_services/auth-queue/**"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "auth-api dependents updates",
+      "additionalBranchPrefix": "auth-api-deps-",
+      "prPriority": -1,
+      "dependencyDashboardApproval": true
     },
     {
       "matchFileNames": ["auth-web/**"],
@@ -27,12 +36,6 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "jobs non-major updates",
       "additionalBranchPrefix": "jobs-"
-    },
-    {
-      "matchFileNames": ["status-api/**"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "status-api non-major updates",
-      "additionalBranchPrefix": "status-api-"
     },
     {
       "matchUpdateTypes": ["major"],
