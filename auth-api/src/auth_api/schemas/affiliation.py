@@ -35,4 +35,4 @@ class AffiliationSchema(BaseSchema):  # pylint: disable=too-many-ancestors, too-
 class AffiliationWithOrgSchema(AffiliationSchema):
     """AffiliationSchema that includes nested organization details."""
 
-    organization = fields.Nested("OrgSchema", attribute="org", only=("id", "uuid", "name", "branch_name"))
+    organization = fields.Nested("OrgSchema", attribute="org", only=("uuid", "name", "branch_name"))
